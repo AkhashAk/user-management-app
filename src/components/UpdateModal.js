@@ -50,7 +50,7 @@ export const UpdateModal = ({ onSubmit, closeModal, currentuser }) => {
 
   useEffect(() => {
     setUser(currentuser);
-  }, []);
+  }, [currentuser]);
 
   const postData = async () => {
     if (user.firstName !== null && user.firstName !== "" && user.emailID !== null && user.emailID !== "") {
