@@ -16,7 +16,7 @@ const initialMessages = [
   },
   {
     type: "NOTHING",
-    message: <>&nbsp;</>,
+    message: <h4>&nbsp;</h4>,
     color: ""
   }
 ];
@@ -135,11 +135,15 @@ export const UpdateModal = ({ onSubmit, closeModal, currentuser }) => {
           </Form.Field>
           <br />
           <Form.Field color={message.color}>
-            {(message.message !== "") ? (
+            {(message.type !== "NOTHING") ? (
               <Header as='h4' textAlign='center' color={message.color}>
                 {message.message}
               </Header>
-            ) : (<Header></Header>)}
+            ) : (
+              <Header textAlign='center' color={message.color}>
+                {message.message}
+              </Header>
+            )}
           </Form.Field>
           <br />
           <Grid>
