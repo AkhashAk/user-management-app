@@ -16,7 +16,7 @@ const initialMessages = [
   },
   {
     type: "NOTHING",
-    message: " ",
+    message: <>&nbsp;</>,
     color: ""
   }
 ];
