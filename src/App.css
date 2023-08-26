@@ -69,3 +69,11 @@
 .btn-create-cancel{
   margin-left: 27.5rem;
 }
+
+.btn-1 {
+  float: left;
+}
+
+.btn-2 {
+  float: right;
+}

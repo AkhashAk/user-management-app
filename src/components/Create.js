@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Grid } from "semantic-ui-react";
+import { Form, Button } from "semantic-ui-react";
 import axios from '../http-common';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from "react-router-dom";
@@ -57,14 +57,10 @@ export default function Create() {
                         onChange={(e) => setEmailID(e.target.value)}
                         placeholder="Enter your email ID" />
                 </Form.Field><br />
-                <Grid>
-                    <Grid.Column textAlign="left">
-                        <Button color="green">Create</Button>
-                    </Grid.Column>
-                    <Grid.Column className="btn-create-cancel" textAlign="right">
-                        <Button color="red" onClick={backToHome}>Cancel</Button>
-                    </Grid.Column>
-                </Grid>
+                <Form.Field>
+                    <Button className="btn-1" color="green">Create</Button>
+                    <Button className="btn-2" color="red" onClick={backToHome}>Cancel</Button>
+                </Form.Field>
             </Form>
         </div>
     )
