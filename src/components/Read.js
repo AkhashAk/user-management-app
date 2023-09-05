@@ -1,4 +1,4 @@
-import { Button, Table, Grid, Input, Icon, Select } from "semantic-ui-react";
+import { Button, Table, Grid, Input, Icon, Select, Header } from "semantic-ui-react";
 import axios from "../http-common";
 import { useEffect, useState } from "react";
 import { UpdateModal } from "./UpdateModal";
@@ -35,6 +35,20 @@ export default function Read() {
         loadUsers();
     };
 
+    const handleFilterSearch = async (filterQuery) => {
+        const res = await axios.get("");
+        switch (filterQuery) {
+            case "Pending":
+                setUsers(res.data.filter(item => item.checked === false));
+                break;
+            case "Completed":
+                setUsers(res.data.filter(item => item.checked === true));
+                break;
+            default:
+                break;
+        }
+    }
+
     const loadUsers = async () => {
         const response = await axios.get('');
         setUsers(response.data.sort((a, b) => (a.firstName > b.firstName) ? 1 : ((b.firstName > a.firstName) ? -1 : 0)));
@@ -56,21 +70,37 @@ export default function Read() {
 
     return (
         <div className="table">
-            <Input fluid icon iconPosition='left' placeholder={`search users by ${options.find(item => item.key === searchQuery.column).text.toLowerCase()}`}
-                value={searchQuery.query}
-                onChange={(e) => {
-                    setSearchQuery({
-                        ...searchQuery,
-                        query: e.target.value
-                    });
-                }}
-                actions
-            >
-                <Icon name='users' />
-                <input />
-                <Select floating compact options={options} defaultValue='firstName' onChange={(e, data) => setSearchQuery({ ...searchQuery, column: data.value })} />
-            </Input>
             <br />
+            <div className="search-filter-container">
+                <div className="filter-div">
+                    <Header size='small' as='h3'>Filter by&nbsp;&nbsp;
+                        <Button negative onClick={() => { handleFilterSearch("Pending") }}>Pending</Button>
+                        <Button positive onClick={() => { handleFilterSearch("Completed") }}>Completed</Button>&nbsp;&nbsp;
+                        <Button animated onClick={loadUsers}>
+                            <Button.Content visible>Reset</Button.Content>
+                            <Button.Content hidden>
+                                <Icon name='repeat' />
+                            </Button.Content>
+                        </Button>
+                    </Header>
+                </div>
+                <div className="search-div">
+                    <Input size='small' fluid icon iconPosition='left' placeholder={`search users by ${options.find(item => item.key === searchQuery.column).text.toLowerCase()}`}
+                        value={searchQuery.query}
+                        onChange={(e) => {
+                            setSearchQuery({
+                                ...searchQuery,
+                                query: e.target.value
+                            });
+                        }}
+                        actions
+                    >
+                        <Icon name='users' />
+                        <input />
+                        <Select floating compact options={options} defaultValue='firstName' onChange={(e, data) => setSearchQuery({ ...searchQuery, column: data.value })} />
+                    </Input>
+                </div>
+            </div> <br />
             <Table color="blue" padded singleLine>
                 <Table.Header>
                     <Table.Row>

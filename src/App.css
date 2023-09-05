@@ -33,6 +33,19 @@
   color: green;
 }
 
+.search-filter-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-div {
+  margin-top: 2px;
+}
+.filter-div,
+.search-div {
+  flex: 1;
+}
+
 .table {
   position: relative;
   max-width: 100%;
