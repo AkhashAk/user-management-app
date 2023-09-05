@@ -68,6 +68,9 @@ export const UpdateModal = ({ onSubmit, closeModal, currentuser }) => {
           .then(() => {
             dispatch({ type: "UPDATE" });
             onSubmit();
+            setTimeout(() => {
+              closeModal();
+            }, 2000);
           })
           .catch(() => {
             alert("Error occured!");
