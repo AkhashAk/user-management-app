@@ -1,23 +1,41 @@
-import { Button, Table, Checkbox, Grid } from "semantic-ui-react";
+import { Button, Table, Grid, Input, Icon, Select } from "semantic-ui-react";
 import axios from "../http-common";
 import { useEffect, useState } from "react";
 import { UpdateModal } from "./UpdateModal";
 import { createPortal } from "react-dom";
 
+const options = [
+    { key: 'firstName', text: 'First Name', value: 'firstName' },
+    { key: 'lastName', text: 'Last Name', value: 'lastName' },
+    { key: 'emailID', text: 'Email ID', value: 'emailID' },
+]
+
 export default function Read() {
     const [users, setUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState({
+        query: "",
+        column: "firstName"
+    });
     const [currentUser, setCurrentUser] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
+
+    // const handleSearch = async (e) => {
+    //     e.preventDefault();
+    //     return await axios.get(`?query=${searchQuery.query}`).then((response) => {
+    //         setUsers(response.data);
+    //         setSearchQuery("");
+    //     }).catch((err) => console.log(err));
+    // }
 
     const handleButtonClick = () => {
         setModalOpen(false);
     };
 
     const handleSubmitClick = () => {
-        getUsers();
+        loadUsers();
     };
 
-    const getUsers = async () => {
+    const loadUsers = async () => {
         const response = await axios.get('');
         setUsers(response.data.sort((a, b) => (a.firstName > b.firstName) ? 1 : ((b.firstName > a.firstName) ? -1 : 0)));
     }
@@ -29,16 +47,30 @@ export default function Read() {
 
     const deleteUser = async (id) => {
         await axios.delete(`${id}`)
-        getUsers();
+        loadUsers();
     }
 
     useEffect(() => {
-        getUsers();
+        loadUsers();
     }, []);
 
     return (
         <div className="table">
-            <br/>
+            <Input fluid icon iconPosition='left' placeholder={`search users by ${options.find(item => item.key === searchQuery.column).text.toLowerCase()}`}
+                value={searchQuery.query}
+                onChange={(e) => {
+                    setSearchQuery({
+                        ...searchQuery,
+                        query: e.target.value
+                    });
+                }}
+                actions
+            >
+                <Icon name='users' />
+                <input />
+                <Select floating compact options={options} defaultValue='firstName' onChange={(e, data) => setSearchQuery({ ...searchQuery, column: data.value })} />
+            </Input>
+            <br />
             <Table color="blue" padded singleLine>
                 <Table.Header>
                     <Table.Row>
@@ -51,7 +83,11 @@ export default function Read() {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {users?.map(user => {
+                    {users?.filter((item) => {
+                        return searchQuery.query.toLowerCase() === ''
+                            ? item
+                            : item[searchQuery.column].toLowerCase().includes(searchQuery.query.toLowerCase());
+                    }).map(user => {
                         return (
                             <>
                                 { modalOpen &&
@@ -67,13 +103,7 @@ export default function Read() {
                                     <Table.Cell singleLine textAlign='center'>{user.firstName}</Table.Cell>
                                     <Table.Cell singleLine textAlign='center'>{user.lastName}</Table.Cell>
                                     <Table.Cell singleLine textAlign='center'>{user.emailID}</Table.Cell>
-                                    <Table.Cell singleLine textAlign='center'>
-                                        <Checkbox
-                                            toggle
-                                            checked={user.checked}
-                                            disabled
-                                        />
-                                    </Table.Cell>
+                                    <Table.Cell singleLine textAlign='center'>{user.checked ? "Completed" : "Pending"}</Table.Cell>
                                     <Table.Cell textAlign='left'>
                                         <Grid>
                                             <Grid.Column textAlign="center">
