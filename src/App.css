@@ -46,6 +46,9 @@
   flex: 1;
 }
 
+.custom-div {
+  height: 390px; /* Set a maximum height of 100 pixels */
+}
 .table {
   position: relative;
   max-width: 100%;
@@ -89,4 +92,8 @@
 
 .btn-2 {
   float: right;
+}
+
+.footer-pagination {
+  text-align: center;
 }
