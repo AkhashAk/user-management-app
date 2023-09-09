@@ -13,6 +13,12 @@
   flex-direction: column;
 }
 
+.header-content {
+  margin-top: 110px; /* Adjust the value to match the height of your navigation bar */
+  z-index: 1; /* Lower z-index */
+  text-align: center;
+}
+
 .app-h2 {
   text-align: center;
 }

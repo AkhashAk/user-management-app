@@ -1,8 +1,9 @@
-import { Button, Table, Grid, Input, Icon, Select, Header, Pagination, Statistic } from "semantic-ui-react";
+import { Button, Table, Input, Icon, Select, Header } from "semantic-ui-react";
 import axios from "../http-common";
 import { useEffect, useState } from "react";
 import { UpdateModal } from "./UpdateModal";
 import { createPortal } from "react-dom";
+import PaginationComponent from './PaginationComponent';
 
 const options = [
     { key: 'firstName', text: 'First Name', value: 'firstName' },
@@ -13,26 +14,32 @@ const options = [
 export default function Read() {
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentUser, setCurrentUser] = useState({});
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState({
         query: "",
         column: "firstName"
     });
-    const [currentUser, setCurrentUser] = useState([]);
-    const [modalOpen, setModalOpen] = useState(false);
     const usersPerPage = 5;
 
     const indexOfLastItem = currentPage * usersPerPage;
     const indexOfFirstItem = indexOfLastItem - usersPerPage;
-    const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(users.length / usersPerPage);
+    const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-    // const handleSearch = async (e) => {
-    //     e.preventDefault();
-    //     return await axios.get(`?query=${searchQuery.query}`).then((response) => {
-    //         setUsers(response.data);
-    //         setSearchQuery("");
-    //     }).catch((err) => console.log(err));
-    // }
+    const handleSearch = (e) => {
+        const searchTerm = e.target.value;
+        setSearchQuery({
+            ...searchQuery,
+            query: searchTerm
+        });
+        const filtered = users.filter((item) =>
+            item[searchQuery.column].toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(filtered);
+        setCurrentPage(1);
+    }
 
     const handlePageChange = (activePage) => {
         setCurrentPage(activePage);
@@ -50,10 +57,10 @@ export default function Read() {
         const res = await axios.get("");
         switch (filterQuery) {
             case "Pending":
-                setUsers(res.data.filter(item => item.checked === false));
+                setFilteredUsers(res.data.filter(item => item.checked === false));
                 break;
             case "Completed":
-                setUsers(res.data.filter(item => item.checked === true));
+                setFilteredUsers(res.data.filter(item => item.checked === true));
                 break;
             default:
                 break;
@@ -61,8 +68,9 @@ export default function Read() {
     }
 
     const loadUsers = async () => {
-        const response = await axios.get('');
-        setUsers(response.data.sort((a, b) => (a.firstName > b.firstName) ? 1 : ((b.firstName > a.firstName) ? -1 : 0)));
+        const response = (await axios.get('')).data.sort((a, b) => (a.firstName > b.firstName) ? 1 : ((b.firstName > a.firstName) ? -1 : 0));
+        setUsers(response);
+        setFilteredUsers(response);
     }
 
     const updateUser = (user) => {
@@ -93,13 +101,8 @@ export default function Read() {
                 <div className="search-div">
                     <Input size='small' fluid icon iconPosition='left' placeholder={`search users by ${options.find(item => item.key === searchQuery.column).text.toLowerCase()}`}
                         value={searchQuery.query}
-                        onChange={(e) => {
-                            setSearchQuery({
-                                ...searchQuery,
-                                query: e.target.value
-                            });
-                        }}
-                        actions
+                        onChange={handleSearch}
+                        actions="true"
                     >
                         <Icon name='users' />
                         <input />
@@ -108,23 +111,19 @@ export default function Read() {
                 </div>
             </div> <br /> <br />
             <div className="custom-div">
-                <Table color="blue" padded singleLine>
+                <Table color="blue" padded singleLine fixed selectable>
                     <Table.Header>
                         <Table.Row>
-                            <Table.HeaderCell textAlign='center' width={2}>First Name</Table.HeaderCell>
-                            <Table.HeaderCell textAlign='center' width={2}>Last Name</Table.HeaderCell>
-                            <Table.HeaderCell textAlign='center' width={2}>Email</Table.HeaderCell>
+                            <Table.HeaderCell textAlign='center' width={1}>First Name</Table.HeaderCell>
+                            <Table.HeaderCell textAlign='center' width={1}>Last Name</Table.HeaderCell>
+                            <Table.HeaderCell textAlign='center' width={1}>Email</Table.HeaderCell>
                             <Table.HeaderCell textAlign='center' width={1}>Course completion status</Table.HeaderCell>
-                            <Table.HeaderCell textAlign='left' width={1}></Table.HeaderCell>
-                            <Table.HeaderCell textAlign='left' width={1}></Table.HeaderCell>
+                            <Table.HeaderCell textAlign='center' width={1}></Table.HeaderCell>
+                            <Table.HeaderCell textAlign='center' width={1}></Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {currentUsers?.filter((item) => {
-                            return searchQuery.query.toLowerCase() === ''
-                                ? item
-                                : item[searchQuery.column].toLowerCase().includes(searchQuery.query.toLowerCase());
-                        }).map((user, index) => {
+                        {currentUsers.map((user, index) => {
                             return (
                                 <>
                                     {modalOpen &&
@@ -141,36 +140,30 @@ export default function Read() {
                                         <Table.Cell singleLine textAlign='center'>{user.lastName}</Table.Cell>
                                         <Table.Cell singleLine textAlign='center'>{user.emailID}</Table.Cell>
                                         <Table.Cell singleLine textAlign='center'>{user.checked ? "Completed" : "Pending"}</Table.Cell>
-                                        <Table.Cell textAlign='left'>
-                                            <Grid>
-                                                <Grid.Column textAlign="center">
-                                                    <Button size="medium" color="blue" className="button-update" onClick={() => updateUser(user)}>Edit</Button>
-                                                </Grid.Column>
-                                            </Grid>
+                                        <Table.Cell textAlign='center' collapsing>
+                                            <Button size="medium" color="blue" className="button-update" onClick={() => updateUser(user)}>Edit</Button>
                                         </Table.Cell>
-                                        <Table.Cell textAlign='left'>
-                                            <Grid>
-                                                <Grid.Column textAlign="center">
-                                                    <Button size="medium" color="red" className="button-delete" onClick={() => deleteUser(user.id)}>Delete</Button>
-                                                </Grid.Column>
-                                            </Grid>
+                                        <Table.Cell textAlign='center' collapsing>
+                                            <Button size="medium" color="red" className="button-delete" onClick={() => deleteUser(user.id)}>Delete</Button>
                                         </Table.Cell>
                                     </Table.Row>
                                 </>
                             )
                         })}
+                        {currentUsers.length === 0 && (
+                            <Table.Row>
+                                <Table.Cell singleLine textAlign='center' colSpan={6}>No user found</Table.Cell>
+                            </Table.Row>
+                        )}
                     </Table.Body>
                 </Table>
-            </div> <br />
-            <div className="footer-pagination">
-                <Pagination
-                    defaultActivePage={1}
-                    pointing
-                    secondary
+                <PaginationComponent
+                    users={users}
+                    currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={(e, { activePage }) => handlePageChange(activePage)}
+                    handlePageChange={handlePageChange}
                 />
-            </div>
+            </div> <br />
         </div>
     );
 }

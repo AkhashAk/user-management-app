@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
     return (
-        <nav>
+        <nav className='navBar'>
             <Link to="/" className="title">Home</Link>
             <ul>
                 <li>
-                    <Link to="/create">+ Add</Link>
+                    <Link to="/create">Add User</Link>
                 </li>
             </ul>
         </nav>

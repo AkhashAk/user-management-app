@@ -8,6 +8,7 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(15, 14, 14, 0.5);
+    z-index: 3; /* Ensure the pagination appears above other content */
 }
 
 .modal {

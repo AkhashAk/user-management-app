@@ -1,18 +1,20 @@
-.active{
+.active {
     background-color: #1d4ed8;
 }
 
-nav {
+.navBar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #274a9c;
     color: white;
-    position: sticky;
+    position: fixed;
     top: 0;
+    width: 100%;
+    z-index: 2; /* Higher z-index */
 }
 
-nav .title {
+.navBar .title {
     font-size: 1.5rem;
     margin: 1rem;
     font-weight: bold;
@@ -20,15 +22,15 @@ nav .title {
     color: white;
 }
 
-nav ul {
+.navBar ul {
     display: flex;
 }
 
-nav ul li {
-   list-style: none; 
+.navBar ul li {
+    list-style: none;
 }
 
-nav ul li a {
+.navBar ul li a {
     display: block;
     text-decoration: none;
     color: white;
@@ -36,15 +38,15 @@ nav ul li a {
     margin: 0 0.5rem;
     border-radius: 0.5rem;
     font-size: 1.5rem;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-nav ul li a:not(.active):hover {
-    background-color:#172554 ;
+.navBar ul li a:not(.active):hover {
+    background-color: #172554;
 }
 
-nav .menu {
-    display: none;
+.navBar .menu {
+    display: contents;
     position: absolute;
     top: 0.75rem;
     right: 0.5rem;
@@ -54,7 +56,7 @@ nav .menu {
     height: 2rem;
 }
 
-nav .menu span {
+.navBar .menu span {
     height: 0.4rem;
     width: 100%;
     background-color: #fff;
